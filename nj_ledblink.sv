@@ -21,9 +21,9 @@ module nj_ledblink
    logic [15:0] interval1;
    logic [15:0] interval2;
    logic [15:0] interval3;
-   logic wr_en0, wr_en1;
+   logic wr_en0, wr_en1, wr_en2, wr_en3;
 
-   // body
+   // body 
    // interval registers 
    always_ff @(posedge clk, posedge reset)
       if (reset) begin
@@ -35,16 +35,22 @@ module nj_ledblink
       else begin  
          if (wr_en0) begin
             interval0 <= wr_data[15:0];
-            interval1 <= wr_data[31:16];
          end
          else if (wr_en1) begin
-            interval2 <= wr_data[15:0];
-            interval3 <= wr_data[31:16];
+            interval1 <= wr_data[15:0];
          end
+         else if (wr_en2) begin
+            interval2 <= wr_data[15:0];
+         end
+         else if (wr_en3) begin
+            interval3 <= wr_data[15:0];
+         end         
       end
    // decoding logic 
-   assign wr_en0 = cs && write && (addr[0]==1'b0);
-   assign wr_en1 = cs && write && (addr[0]==1'b1);
+   assign wr_en0 = cs && write && (addr==5'b00000);
+   assign wr_en1 = cs && write && (addr==5'b00001);
+   assign wr_en2 = cs && write && (addr==5'b00010);
+   assign wr_en3 = cs && write && (addr==5'b00011);   
    // slot read interface
    assign rd_data =  0;
    // external output  
